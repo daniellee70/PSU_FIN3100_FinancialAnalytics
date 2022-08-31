@@ -1,0 +1,84 @@
+---
+title: "Week 2: R for Data Science Ch 1, 2, and 3"
+author: "Daniel Lee"
+date: "2022-08-30"
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Welcome
+
+
+# Ch1 Introduction 
+
+### The data science project workflow
+
+
+### Key terms
+
+* R
+* RStudio
+* r packages
+
+
+### Install the tidyverse package
+
+```{r eval = FALSE}
+install.packages("tidyverse")
+library(tidyverse)
+```
+
+### Running R code 
+
+```{r}
+1+2
+```
+
+
+
+### Getting help
+
+Google
+Stackoverflow
+
+
+# Ch2 Introduction to Data Exploration
+
+
+# Ch3 Data Visualization
+
+### Set up
+
+
+### data
+
+
+### aesthetics
+
+
+### facets
+
+
+### geometric objects
+
+
+### statistical transformation
+
+
+### position adjustments
+
+
+### coordinate systems
+
+
+### the layered grammar of graphics
+
+
+
+

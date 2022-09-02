@@ -1,22 +1,19 @@
 ---
 title: "Communication with RMarkdown"
-author: "Business Science"
-date: "3/14/2019"
 output:
-  html_document:
-    code_folding: none
-    df_print: paged
+  html_document: 
+    anchor_sections: TRUE
+    code_folding: "show"
     highlight: tango
     number_sections: yes
-    theme: flatly
+    theme: 
+        bootswatch: solar
     toc: yes
     toc_depth: 2
   pdf_document:
     toc: yes
     toc_depth: '2'
 always_allow_html: true
-editor_options: 
-  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -25,7 +22,6 @@ knitr::opts_chunk$set(
     eval = TRUE,
     message = FALSE,
     warning = FALSE,
-    dpi = 300,
     fig.align = "center"
     )
 
@@ -44,9 +40,6 @@ library(tidyquant)
 library(plotly)
 ```
 
-# RMarkdown
-
-> Is amazing.
 
 ## What can RMarkdown be used for?
 
@@ -70,7 +63,7 @@ library(plotly)
 # tinytex::install_tinytex()
 ```
 
-# How Rmarkdown Works
+# Write with Markdown
 
 # Header 1
 
@@ -78,30 +71,26 @@ library(plotly)
 
 ### Header 3
 
-# Working with Text
 
-Free-form text.
+Plain text.
 
-Make text **bold**.
+Type **bold**.
 
-Make text *italics*.
+Type *italics*.
 
-Make text ***bold + italics***.
+Type ***bold + italics***.
 
 Talk about code - the `tidyverse` is awesome
 
 **Unordered List:**
 
 -   Item 1
-
 -   Item 2
 
 **Ordered List:**
 
 1.  First point
-
 2.  Second point
-
 3.  More points
 
 # Tabset {.tabset .tabset-fade .tabset-pills}
@@ -117,6 +106,7 @@ This is Tab 2
 # Images
 
 ![PSU Logo](img/PSU-logo.png){width="100px"}
+   
 
 ```{r, out.width="100px", echo=FALSE, fig.cap="PSU Logo"}
 knitr::include_graphics("img/PSU-logo.png")
@@ -124,23 +114,16 @@ knitr::include_graphics("img/PSU-logo.png")
 
 # Code
 
-Read in data and print to HTML. Notice effect of `df_print: paged` option for HTML.
-
--   Try changing to `df_print: default`, or `kable` or `tibble`. PDF prints normally.
-
--   Try changing `results = "hide"`.
-
 ```{r cars}
-mpg
+# Import stock prices
+stocks <- tq_get(c("TSLA", "AMZN"),
+                 get = "stock.prices",
+                 from = "2016-01-01",
+                 to = "2017-01-01")
+stocks
 ```
 
-We can do data manipulations too. Try changing the YAML `code_folding` option from `none` to `hide` to `show`.
 
-```{r}
-mpg %>%
-  select(model, cyl, hwy) 
-  
-```
 
 # Plots
 
@@ -151,8 +134,8 @@ Plotting works as expected. Try changing:
 **Static plots:**
 
 ```{r, fig.cap="Revenue by Category", out.height="600px"}
-g <- ggplot(data = mpg) + 
-  geom_point(mapping = aes(x = displ, y = hwy, color = class))
+g <- ggplot(data = stocks) + 
+  geom_point(mapping = aes(x = volume, y = adjusted, color = symbol))
 
 g
   
@@ -171,19 +154,17 @@ ggplotly(g)
 **Static Tables:**
 
 -   `knitr` package - `knitr::kable()` - Simple to use, great with PDF
--   [`gt` package](https://gt.rstudio.com/) - Not on CRAN yet, but really good for static tables
 
-```{r, fig.cap="Top Bike Categories"}
-mpg %>% head() %>% knitr::kable()
+```{r}
+stocks %>% head() %>% knitr::kable()
 ```
 
 **Dynamic Tables:**
 
--   Can print tables without additional formatting in HTML with the `df_print: paged` option in YAML
 -   Potential Gotcha: Note that this will not print with format in PDF
 
 ```{r}
-mpg 
+stocks 
 ```
 
 # Footnotes

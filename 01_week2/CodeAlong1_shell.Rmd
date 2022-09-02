@@ -1,0 +1,131 @@
+---
+title: "Week 2: Code along 1"
+author: "Daniel Lee"
+date: "2022-08-30"
+output:
+  html_document: 
+    toc: yes
+  pdf_document: default
+  word_document: default
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Welcome
+
+# Ch1 Introduction
+
+## The data science project workflow
+
+## Prerequisites
+
+-   R
+-   RStudio
+-   r packages
+
+## Install the tidyverse package
+
+
+## Running R code
+
+
+## Getting help
+
+* Google 
+* Stackoverflow
+
+# Ch2 Introduction to Data Exploration
+
+# Ch3 Data Visualization
+
+## Set up
+
+
+## data
+
+
+## aesthetics
+
+* x
+* y
+* color
+* size
+* alpha
+* shape
+
+
+## common problems
+
+* Sometimes you’ll run the code and nothing happens.
+* Putting the + in the wrong place.
+
+How to get help
+
+* ? function name
+* Select the function name and press F1
+* Read the error message
+* Google the error message
+
+## facets
+
+
+## geometric objects
+
+different visual object to represent data
+
+
+
+not every aesthetic works with every geom
+
+
+
+two geoms in the same graph!
+
+
+local vs. global mappings
+This makes it possible to display different aesthetics in different layers.
+
+
+specify different data for each layer
+
+
+
+## statistical transformation
+
+## position adjustments
+
+adjustments for bar charts
+
+
+adjustments for scatterplots
+
+
+
+## coordinate systems
+
+switch x and y
+
+
+
+set the aspect ratio correctly for maps
+
+
+
+Polar coordinates reveal an interesting connection between a bar chart and a Coxcomb chart.
+
+
+## the layered grammar of graphics
+
+The grammar of graphics is based on the insight that you can uniquely describe any plot as a combination of:
+
+* a dataset, 
+* a geom, 
+* a set of mappings, 
+* a stat, 
+* a position adjustment, 
+* a coordinate system, and 
+* a faceting scheme.

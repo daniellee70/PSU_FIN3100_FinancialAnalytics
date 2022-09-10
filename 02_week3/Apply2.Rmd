@@ -1,0 +1,68 @@
+---
+title: "Week 3: Apply 2"
+author: "Daniel Lee"
+date: "2022-09-10"
+output:
+  html_document: 
+    toc: yes
+  pdf_document: default
+  word_document: default
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Install packages
+library(tidyverse)
+library(tidyquant)
+```
+
+# Import stock prices
+
+```{r}
+stocks <- tq_get(c("AAPL", "NFLX", "AMZN"),
+                 get = "stock.prices",
+                 from = "2016-01-01")
+stocks
+```
+
+# Plot stock prices
+
+```{r}
+stocks %>%
+    
+    ggplot(aes(x = date, y = adjusted, color = symbol)) +
+    geom_line()
+```
+
+
+
+
+
+########################################################
+# Apply the following dplyr verbs to your stock data
+#########################################################
+
+## Filter rows
+
+
+## Arrange rows
+
+
+## Select columns
+
+
+## Add columns
+
+
+## Summarize by groups
+
+
+
+
+
+
+
+

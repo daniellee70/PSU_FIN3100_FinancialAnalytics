@@ -1,0 +1,170 @@
+---
+title: "R for Data Science"
+author: "Daniel Lee"
+date: "2022-09-09"
+output:
+  html_document: 
+    toc: yes
+  pdf_document: default
+  word_document: default
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(nycflights13)
+```
+
+# Import data
+
+```{r}
+flights
+```
+
+
+# Filter rows
+
+```{r}
+filter(flights, month == 1, day == 1)
+filter(flights, month == 1 & day == 1)
+filter(flights, month == 1 | day == 1)
+filter(flights, month %in% c(11, 12))
+```
+
+# Arrange rows
+
+```{r}
+arrange(flights, desc(month), desc(day))
+```
+
+# Select columns
+
+```{r}
+select(flights, year:dep_time)
+select(flights, year, month, day, dep_time)
+select(flights, year, month, day, dep_time, dep_delay)
+select(flights, year, month, day, starts_with("dep"))
+select(flights, year, month, day, contains("time"))
+select(flights, year, month, day, ends_with("time"))
+select(flights, year, month, day, contains("time"), everything())
+
+```
+
+# Add columns
+
+```{r}
+mutate(flights,
+       gain = dep_delay - arr_delay) %>%
+    
+    # Select year, month, day, and gain
+    select(year:day, gain)
+
+# Just keep gain
+mutate(flights,
+       gain = dep_delay - arr_delay) %>%
+    
+    # Select year, month, day, and gain
+    select(gain)
+
+# alternative using transmute()
+transmute(flights,
+          gain = dep_delay - arr_delay)
+
+# lag()
+select(flights, dep_time) %>%
+    
+    mutate(dep_time_lag1 = lag(dep_time))
+
+# cumsum()
+select(flights, minute) %>%
+    
+    mutate(minute_cumsum = cumsum(minute))
+```
+
+# Summarize by groups
+
+Collapsing data to a single row
+```{r}
+flights
+
+# average departure delay
+summarise(flights, delay = mean(dep_delay, na.rm = TRUE))
+```
+
+
+Summarize by group
+```{r}
+flights %>%
+    
+    # Group by airlines
+    group_by(carrier) %>%
+    
+    # Calculate average departure delay
+    summarise(delay = mean(dep_delay, na.rm = TRUE)) %>%
+    
+    # Sort it
+    arrange(delay)
+```
+
+
+Delays increase with distance up to ~750 miles and then decrease
+```{r}
+flights %>%
+    group_by(dest) %>%
+    summarise(count = n(),
+              dist = mean(distance, na.rm = TRUE),
+              delay = mean(arr_delay, na.rm = TRUE)) %>%
+    
+    # Plot
+    ggplot(mapping = aes(x = dist, y = delay)) +
+    geom_point(aes(size = count), alpha = 0.3) +
+    geom_smooth(se = FALSE)
+```
+
+
+Missing values
+```{r}
+flights %>%
+    
+    # Remove missing values
+    filter(!is.na(dep_delay))
+```
+
+
+counts
+Wow, there are some planes that have an average delay of 5 hours (300 minutes)!
+
+
+
+We can get more insight if we draw a scatterplot of number of flights vs. average delay:
+
+
+useful summary functions
+
+
+grouping multiple variables
+```{r}
+flights %>%
+    group_by(year, month, day) %>%
+    summarise(count = n()) %>%
+    ungroup()
+```
+
+
+ungrouping
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,58 @@
+---
+title: "R for Data Science"
+subtitle: "Ch4: Workflow: basics"
+output:
+  html_document: 
+    toc: yes
+  pdf_document: default
+  word_document: default
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+```
+
+
+# Coding basics
+
+## R as a calculator
+
+```{r}
+1000 / 10
+
+x <- 1000 / 10
+# x
+```
+
+## assignment symbol
+
+
+
+# What's in a name?
+
+
+# Calling functions
+
+## Use of `TAB`
+
+```{r}
+seq(from = 1, to = 10, by = 1)
+```
+
+## continuation character, `+`
+
+```{r}
+seq(from = 1, to = 10)
+```
+
+## Printing to screen
+
+```{r}
+y <- seq(from = 1, to = 10)
+y
+```
+
+
+

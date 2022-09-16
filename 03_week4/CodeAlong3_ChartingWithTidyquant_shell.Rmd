@@ -1,0 +1,63 @@
+---
+title: "Charting with tidyquant"
+author: "Daniel Lee"
+date: "2022-09-16"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# Load packages
+library(tidyverse) # core functions
+library(tidyquant) # for financial analysis
+
+# Import data
+AAPL <- tq_get("AAPL")
+```
+
+
+
+## Line Chart
+
+```{r}
+AAPL %>%
+    ggplot(aes(x = date, y = close)) +
+    geom_line() +
+    labs(title = "AAPL Line Chart", y = "Closing Price", x = "") + 
+    theme_tq()
+```
+
+## Bar Chart
+
+```{r}
+AAPL %>%
+    tail(30) %>%
+    ggplot(aes(x = date, y = close)) +
+    geom_barchart(aes(open = open, high = high, low = low, close = close)) +
+    labs(title = "AAPL Bar Chart", y = "Closing Price", x = "") + 
+    theme_tq()
+```
+
+## Candlestick Chart
+
+```{r}
+AAPL %>%
+    tail(30) %>%
+    ggplot(aes(x = date, y = close)) +
+    geom_candlestick(aes(open = open, high = high, low = low, close = close)) +
+    labs(title = "AAPL Candlestick Chart", y = "Closing Price", x = "") +
+    theme_tq()
+```
+
+
+
+
+
+
+
+

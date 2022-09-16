@@ -1,0 +1,80 @@
+---
+title: "Apply it to your data 3"
+subtitle: "Which of your stock beat the market in 2022?"
+author: "Daniel Lee"
+date: "2022-09-16"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+```{r}
+# Load packages
+library(tidyverse)
+library(tidyquant)
+```
+
+## 1 Get stock prices and convert to returns
+
+```{r}
+Ra <- c("AAPL", "GOOG", "NFLX") %>%
+    tq_get(get  = "stock.prices",
+           from = "2022-01-01") %>%
+    group_by(symbol) %>%
+    tq_transmute(select     = adjusted, 
+                 mutate_fun = periodReturn, 
+                 period     = "monthly", 
+                 col_rename = "Ra")
+Ra
+```
+
+## 2 Get baseline and convert to returns
+
+```{r}
+Rb <- "^IXIC" %>%
+    tq_get(get  = "stock.prices",
+           from = "2022-01-01") %>%
+    tq_transmute(select     = adjusted, 
+                 mutate_fun = periodReturn, 
+                 period     = "monthly", 
+                 col_rename = "Rb")
+Rb
+```
+
+## 3 Join the two tables
+
+```{r}
+RaRb <- left_join(Ra, Rb, by = c("date" = "date"))
+RaRb
+```
+
+## 4 Calculate CAPM
+
+```{r}
+RaRb_capm <- RaRb %>%
+    tq_performance(Ra = Ra, 
+                   Rb = Rb, 
+                   performance_fun = table.CAPM)
+RaRb_capm
+```
+
+## Which stock has a positively skewed distribution of returns?
+
+
+```{r}
+RaRb_capm <- RaRb %>%
+    tq_performance(Ra = Ra, 
+                   Rb = Rb, 
+                   performance_fun = table.CAPM)
+RaRb_capm
+```
+
+
+
+
+
+

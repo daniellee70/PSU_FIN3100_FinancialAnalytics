@@ -1,0 +1,51 @@
+---
+title: "tidyquant::tq_get"
+author: "Daniel Lee"
+date: "2022-09-16"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# Load packages
+library(tidyverse)
+library(tidyquant)
+```
+
+
+## Stock index
+
+```{r}
+tq_index_options()
+data <- tq_index("SP400")
+```
+
+## Stock exchanges
+
+```{r}
+tq_exchange_options()
+data <- tq_exchange("NYSE")
+```
+
+## tq_get
+
+### stock prices from Yahoo Finance
+```{r}
+stock <- tq_get("TSLA")
+```
+
+### economic data from FRED
+
+```{r}
+unemployment_nh <- tq_get("NHUR", get = "economic.data")
+unemployment_nh 
+```
+
+
+
+

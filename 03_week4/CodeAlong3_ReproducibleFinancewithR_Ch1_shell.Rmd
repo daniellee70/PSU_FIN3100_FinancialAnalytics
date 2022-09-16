@@ -1,0 +1,19 @@
+---
+title: "Reproducible Finance with R"
+subtitle: "Ch1: Introduction"
+output:
+  html_document: 
+    toc: yes
+  pdf_document: default
+  word_document: default
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+```
+
+
+Provide major takeaways from Chapter 1 in 50 words. 
+

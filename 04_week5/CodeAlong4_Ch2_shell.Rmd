@@ -1,0 +1,35 @@
+---
+title: "Week 5: Code along 4"
+subtitle: "CHAPTER 2 Returns: ASSET PRICES TO RETURNS"
+author: "Daniel Lee"
+date: "2022-09-19"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# Load packages
+
+# Core
+library(tidyverse)
+library(tidyquant)
+
+```
+
+## Goal
+Take raw prices of five individual stocks and transform them into monthly returns
+five stocks: "SPY", "EFA", "IJS", "EEM", "AGG"
+
+## 1 Import stock prices
+
+
+## 2 Convert prices to returns
+
+
+## 3 Make plot
+

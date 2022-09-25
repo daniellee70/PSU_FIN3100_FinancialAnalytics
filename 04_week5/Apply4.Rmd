@@ -1,0 +1,37 @@
+---
+title: "Apply it to your data 4"
+subtitle: "Which of your stock beat the market in 2022?"
+author: "Daniel Lee"
+date: "2022-09-16"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+```{r}
+# Load packages
+library(tidyverse)
+library(tidyquant)
+```
+
+
+## 1 Import stock prices ***of your choice*** 
+
+
+## 2 Convert prices to returns by ***quarterly***
+
+
+## 3 Make plot
+
+
+## 4 Interpret the plot
+
+
+## 5 Change the global chunck options
+Hide the code, messages, and warnings
+
+

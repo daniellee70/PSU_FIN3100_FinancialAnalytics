@@ -1,0 +1,45 @@
+---
+title: "Apply it to your data 5"
+subtitle: "What return should you expect from the portfolio in a typical quarter?"
+author: "Daniel Lee"
+date: "2022-09-19"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+```{r}
+# Load packages
+
+# Core
+library(tidyverse)
+library(tidyquant)
+
+```
+
+## Goal
+Collect individual returns into a portfolio by assigning a weight to each stock
+
+Choose your stocks.
+
+from 2012-12-31 to 2017-12-31
+
+## 1 Import stock prices
+
+
+## 2 Convert prices to returns (quarterly)
+
+
+## 3 Assign a weight to each asset (change the weigting scheme)
+
+
+## 4 Build a portfolio
+
+
+## 5 Plot: Portfolio Histogram and Density
+
+What return should you expect from the portfolio in a typical quarter?

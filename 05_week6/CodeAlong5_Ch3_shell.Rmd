@@ -1,0 +1,43 @@
+---
+title: "Week 6: Code along 5"
+subtitle: "CHAPTER 3 Building a Portfolio"
+author: "Daniel Lee"
+date: "2022-09-19"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+```{r}
+# Load packages
+
+# Core
+library(tidyverse)
+library(tidyquant)
+
+```
+
+## Goal
+Collect individual returns into a portfolio by assigning a weight to each stock
+
+five stocks: "SPY", "EFA", "IJS", "EEM", "AGG"
+
+from 2012-12-31 to 2017-12-31
+
+## 1 Import stock prices
+
+
+## 2 Convert prices to returns
+
+
+## 3 Assign a weight to each asset
+
+
+## 4 Build a portfolio
+
+
+## 5 Plot

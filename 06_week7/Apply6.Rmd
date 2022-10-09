@@ -40,6 +40,9 @@ from 2012-12-31 to 2017-12-31
 ## 4 Build a portfolio
 
 
-## 5 Plot: Expected Returns versus Risk
+## 5 Compute Standard Deviation
+
+
+## 6 Plot: Expected Returns versus Risk
 
 How should you expect your portfolio to perform relative to its assets in the portfolio? Would you invest all your money in any of the individual stocks instead of the portfolio? Discuss both in terms of expected return and risk.  

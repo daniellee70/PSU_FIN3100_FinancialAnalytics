@@ -24,7 +24,7 @@ library(tidyquant)
 ```
 
 ## Goal
-Collect individual returns into a portfolio by assigning a weight to each stock
+Measure portfolio risk using skewness. Skewness is the extent to which returns are asymmetric around the mean. It is important because a positively skewed distribution means large positive returns are more likely while a negatively skewed distribution implies large negative returns are more likely.
 
 five stocks: "SPY", "EFA", "IJS", "EEM", "AGG"
 

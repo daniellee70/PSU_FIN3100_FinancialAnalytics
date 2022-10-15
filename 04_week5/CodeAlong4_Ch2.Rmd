@@ -62,13 +62,13 @@ asset_returns_tbl <- prices %>%
 
 ## 3 Make plot
 
-```{r}
+```{r fig.height=8}
 asset_returns_tbl %>%
 
     ggplot(aes(x = returns)) +
     geom_density(aes(col = asset), alpha = 1, show.legend = FALSE) +
     geom_histogram(aes(fill = asset), alpha = 0.45, binwidth = 0.01) +
-    facet_wrap(~asset) +
+    facet_wrap(~asset, ncol = 1, scales = "free_y") +
     guides(fill = "none") +
 
     labs(title = "Monthly Returns since 2013",

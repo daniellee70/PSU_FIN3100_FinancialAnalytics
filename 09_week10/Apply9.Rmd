@@ -1,0 +1,48 @@
+---
+title: "Apply it to your data 9"
+subtitle: "How has your portfolio preformed over time?"
+author: "Daniel Lee"
+date: "2022-09-19"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+```{r}
+# Load packages
+
+# Core
+library(tidyverse)
+library(tidyquant)
+
+```
+
+## Goal
+Visualize and examine changes in the underlying trend in the performance of your portfolio in terms of Sharpe Ratio.
+
+Choose your stocks.
+
+from 2012-12-31 to present
+
+## 1 Import stock prices
+
+
+## 2 Convert prices to returns (monthly)
+
+
+## 3 Assign a weight to each asset (change the weigting scheme)
+
+
+## 4 Build a portfolio
+
+
+## 5 Compute kurtosis
+
+
+## 6 Plot: Rolling kurtosis
+
+How has your portfolio performed over time? Provide dates of the structural breaks, if any. The Code Along Assignment 9 had one structural break in November 2016. What do you think the reason is?  

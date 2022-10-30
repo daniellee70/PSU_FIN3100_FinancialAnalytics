@@ -40,9 +40,9 @@ from 2012-12-31 to present
 ## 4 Build a portfolio
 
 
-## 5 Compute kurtosis
+## 5 Compute Sharpe Ratio
 
 
-## 6 Plot: Rolling kurtosis
+## 6 Plot: Rolling Sharpe Ratio
 
 How has your portfolio performed over time? Provide dates of the structural breaks, if any. The Code Along Assignment 9 had one structural break in November 2016. What do you think the reason is?  

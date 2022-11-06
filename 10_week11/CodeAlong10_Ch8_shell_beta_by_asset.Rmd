@@ -96,7 +96,16 @@ asset_beta_tbl <- asset_returns_tbl %>%
 
 asset_beta_tbl %>%
     
-    ggplot(aes(estimate, fct_reorder(asset, estimate))) +
-    geom_col()
+    ggplot(aes(estimate, 
+               fct_reorder(asset, estimate),
+               fill = asset)) +
+    geom_col() +
+    
+    scale_fill_tq() +
+    theme_tq() +
+    theme(legend.position = "none") +
+    
+    labs(y = NULL, x = "Beta Coefficient",
+         title = "The Best Coefficient by Asset")
 ```
 

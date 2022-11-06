@@ -1,0 +1,102 @@
+---
+title: "Week 11: Code along 10 - optional"
+subtitle: "CHAPTER 8 Capital Asset Pricing Model"
+author: "Daniel Lee"
+date: "2022-09-19"
+output: 
+  html_document: 
+    toc: yes
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+```{r}
+# Load packages
+
+# Core
+library(tidyverse)
+library(tidyquant)
+
+```
+
+## Goal
+Measure the beta coefficient by asset.
+
+five stocks: "SPY", "EFA", "IJS", "EEM", "AGG"
+
+from 2012-12-31 to 2017-12-31
+
+## 1 Import stock prices
+
+```{r}
+symbols <- c("SPY", "EFA", "IJS", "EEM", "AGG")
+
+prices <- tq_get(x    = symbols,
+                 get  = "stock.prices",    
+                 from = "2012-12-31",
+                 to   = "2017-12-31")
+```
+
+## 2 Convert prices to returns
+
+```{r}
+asset_returns_tbl <- prices %>%
+    
+    group_by(symbol) %>%
+    
+    tq_transmute(select     = adjusted, 
+                 mutate_fun = periodReturn, 
+                 period     = "monthly",
+                 type       = "log") %>%
+    
+    slice(-1) %>%
+    
+    ungroup() %>%
+    
+    set_names(c("asset", "date", "returns"))
+```
+
+## 3 Get market returns
+
+```{r}
+market_returns_tbl <- tq_get(x    = symbols,
+                 get  = "stock.prices",    
+                 from = "2012-12-31",
+                 to   = "2017-12-31") %>%
+    
+    tq_transmute(select     = adjusted, 
+                 mutate_fun = periodReturn, 
+                 period     = "monthly",
+                 type       = "log") %>%
+    
+    slice(-1)
+```
+
+## 4 Calculate CAPM Beta
+
+
+```{r}
+asset_beta_tbl <- asset_returns_tbl %>%
+    
+    nest(data = -asset) %>%
+    
+    # Build CAPM
+    mutate(model = map(.x = data, .f = ~lm(returns ~ market_returns_tbl$monthly.returns, data = .x))) %>%
+    
+    # Extract beta
+    mutate(model = map(.x = model, .f = broom::tidy)) %>%
+    
+    unnest(model) %>%
+    select(asset, term, estimate, p.value) %>%
+    filter(term != "(Intercept)")
+
+asset_beta_tbl %>%
+    
+    ggplot(aes(estimate, fct_reorder(asset, estimate))) +
+    geom_col()
+```
+

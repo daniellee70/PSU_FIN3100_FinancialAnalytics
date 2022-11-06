@@ -1,0 +1,189 @@
+---
+title: "Week 11: Code along 10"
+subtitle: "CHAPTER 8 Capital Asset Pricing Model"
+author: "Daniel Lee"
+date: "2022-09-19"
+output: 
+  html_document: 
+    toc: yes
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+```{r}
+# Load packages
+
+# Core
+library(tidyverse)
+library(tidyquant)
+
+```
+
+## Goal
+Measure the portfolio's beta coefficient, which can be thought of as the portfolio's sensitivity to the market or its riskiness relative to the market.
+
+five stocks: "SPY", "EFA", "IJS", "EEM", "AGG"
+
+market: "SPY"
+
+from 2012-12-31 to 2017-12-31
+
+## 1 Import stock prices
+
+```{r}
+symbols <- c("SPY", "EFA", "IJS", "EEM", "AGG")
+
+prices <- tq_get(x    = symbols,
+                 get  = "stock.prices",    
+                 from = "2012-12-31",
+                 to   = "2017-12-31")
+```
+
+## 2 Convert prices to returns
+
+```{r}
+asset_returns_tbl <- prices %>%
+    
+    group_by(symbol) %>%
+    
+    tq_transmute(select     = adjusted, 
+                 mutate_fun = periodReturn, 
+                 period     = "monthly",
+                 type       = "log") %>%
+    
+    slice(-1) %>%
+    
+    ungroup() %>%
+    
+    set_names(c("asset", "date", "returns"))
+```
+
+## 3 Assign a weight to each asset
+
+```{r}
+# symbols
+symbols <- asset_returns_tbl %>% distinct(asset) %>% pull()
+symbols
+
+# weights
+weights <- c(0.25, 0.25, 0.2, 0.2, 0.1)
+weights
+
+w_tbl <- tibble(symbols, weights)
+w_tbl
+```
+
+## 4 Build a portfolio
+
+
+```{r}
+# ?tq_portfolio
+
+portfolio_returns_tbl <- asset_returns_tbl %>%
+    
+    tq_portfolio(assets_col = asset, 
+                 returns_col = returns, 
+                 weights = w_tbl, 
+                 rebalance_on = "months", 
+                 col_rename = "returns")
+
+portfolio_returns_tbl
+```
+
+
+
+## 5 Calculate CAPM Beta
+
+### 5.1 Get market returns
+```{r}
+# Get market returns
+market_returns_tbl <- tq_get("SPY",
+                             get = "stock.prices",
+                             from = "2012-12-31",
+                             to = "2017-12-31") %>%
+
+    # Convert prices to returns
+    tq_transmute(select     = adjusted, 
+                 mutate_fun = periodReturn, 
+                 period     = "monthly",
+                 type       = "log", 
+                 col_rename = "returns") %>%
+    
+    slice(-1)
+```
+
+### 5.2 Join returns 
+```{r}
+# Combine market returns with portfolio returns
+portfolio_market_returns_tbl <- portfolio_returns_tbl %>%
+
+    # Add market returns
+    mutate(market_returns = market_returns_tbl %>% pull(returns))
+
+```
+
+### 5.3 CAPM Beta
+```{r}
+# 3 Calculating CAPM Beta ----
+
+# A complete list of functions for performance_fun()
+# tq_performance_fun_options()
+
+portfolio_market_returns_tbl %>%
+
+    tq_performance(Ra = returns,
+                   Rb = market_returns,
+                   performance_fun = CAPM.beta)
+```
+
+
+## 6 Plot
+
+### Scatter with regression line
+```{r}
+# Figure 8.2 Scatter with regression line from ggplot ----
+
+portfolio_market_returns_tbl %>%
+
+    ggplot(aes(market_returns, returns)) +
+    geom_point(color = "cornflowerblue") +
+
+    geom_smooth(method = "lm", se = FALSE,
+                size = 1.5, color = tidyquant::palette_light()[3]) +
+
+    labs(x = "market returns",
+         y = "portfolio returns")
+
+```
+
+### Actual versus fitted returns
+```{r}
+# Figure 8.5 Actual versus fitted returns ----
+
+portfolio_market_returns_tbl %>%
+
+    # Run regression
+    lm(returns ~ market_returns, data = .) %>%
+
+    # Get fitted
+    broom::augment() %>%
+
+    # Add date %>%
+    mutate(date = portfolio_market_returns_tbl$date) %>%
+
+    # Transform data to long format
+    pivot_longer(cols = c(returns, .fitted),
+                 names_to = "type",
+                 values_to = "returns") %>%
+
+    # Plot
+    ggplot(aes(date, returns, color = type)) +
+    geom_line()
+
+
+```
+

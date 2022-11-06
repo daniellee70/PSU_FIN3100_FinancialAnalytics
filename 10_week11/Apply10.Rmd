@@ -1,0 +1,57 @@
+---
+title: "Apply it to your data 10"
+subtitle: "How sensitive is your portfolio to the market?"
+author: "Daniel Lee"
+date: "2022-09-19"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+```{r}
+# Load packages
+
+# Core
+library(tidyverse)
+library(tidyquant)
+
+```
+
+## Goal
+Calculate and visualize your portfolio's beta.
+
+Choose your stocks and the baseline market.
+
+from 2012-12-31 to present
+
+## 1 Import stock prices
+
+
+## 2 Convert prices to returns (monthly)
+
+
+## 3 Assign a weight to each asset (change the weigting scheme)
+
+
+## 4 Build a portfolio
+
+
+## 5 Calculate CAPM Beta
+
+### 5.1 Get market returns
+
+
+### 5.2 Join returns
+
+
+### 5.3 CAPM Beta
+
+
+
+## 6 Plot: Scatter with regression line
+
+How sensitive is your portfolio to the market? Discuss in terms of the beta coefficient. Does the plot confirm the beta coefficient you calculated?

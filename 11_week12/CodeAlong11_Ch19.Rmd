@@ -1,0 +1,139 @@
+---
+title: "Week 12: Code along 11"
+subtitle: "R for Data Science: Chapter 19"
+author: "Daniel Lee"
+date: "2022-10-05"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Load package
+library(tidyverse)
+library(lubridate)
+library(nycflights13)
+```
+
+## Ch19 Functions 
+
+### Introduction
+
+
+### When should you write a function?
+
+```{r}
+# For reproducible work
+set.seed(1234)
+
+# Creat a data frame
+df <- tibble::tibble(
+  a = rnorm(10),
+  b = rnorm(10),
+  c = rnorm(10),
+  d = rnorm(10)
+)
+```
+
+```{r}
+# Rescale each column
+
+df$a <- (df$a - min(df$a, na.rm = TRUE)) / 
+  (max(df$a, na.rm = TRUE) - min(df$a, na.rm = TRUE))
+df$b <- (df$b - min(df$b, na.rm = TRUE)) / 
+  (max(df$b, na.rm = TRUE) - min(df$b, na.rm = TRUE))
+df$c <- (df$c - min(df$c, na.rm = TRUE)) / 
+  (max(df$c, na.rm = TRUE) - min(df$c, na.rm = TRUE))
+df$d <- (df$d - min(df$d, na.rm = TRUE)) / 
+  (max(df$d, na.rm = TRUE) - min(df$d, na.rm = TRUE))
+
+df
+```
+
+```{r}
+rescale <- function(x) {
+    
+    # body
+    x <- (x - min(x, na.rm = TRUE)) / 
+  (max(x, na.rm = TRUE) - min(x, na.rm = TRUE))
+    
+    # return values
+    return(x)
+    
+}
+```
+
+```{r}
+df$a <- rescale(df$a)
+df$b <- rescale(df$b)
+df$c <- rescale(df$c)
+df$d <- rescale(df$d)
+
+df
+```
+
+### Functions are for humans and computers
+
+
+### Conditional execution
+
+```{r}
+detect_sign <- function(x) {
+    
+    if(x > 0) {
+        message("Value is positive") 
+        print(x)
+    } else if(x == 0) {
+        warning("Value is not positive, but it can be accepted")
+        print(x)
+    } else {
+        stop("Value is negative, the function must stop")
+        print(x)
+    }
+    
+}
+
+3 %>% detect_sign()
+0 %>% detect_sign()
+# -1 %>% detect_sign()
+```
+
+### Function arguments
+
+```{r}
+?mean
+
+x <- c(1:10, 100, NA)
+x
+
+x %>% mean()
+x %>% mean(na.rm = TRUE)
+x %>% mean(na.rm = TRUE, trim = 0.1)
+
+mean_remove_na <- function(x, na.rm = TRUE, ...) {
+    
+    avg <- mean(x, na.rm = na.rm, ...)
+    
+    return(avg)
+    
+}
+
+x %>% mean_remove_na()
+x %>% mean_remove_na(na.rm = FALSE)
+x %>% mean_remove_na(trim = 0.1)
+```
+
+two types of functions 
+
+* one that takes a vector as the input
+* another that takes a data frame as the input
+
+
+
+
+
+
+
+

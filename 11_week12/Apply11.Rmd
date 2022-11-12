@@ -1,0 +1,77 @@
+---
+title: "Week 12: Apply it to your data 11"
+subtitle: "Chapter 19 Functions"
+author: "Daniel Lee"
+date: "2022-10-05"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Load package
+library(tidyverse)
+library(nycflights13)
+```
+
+## Import your data
+
+```{r}
+data(flights)
+
+flights %>% skimr::skim()
+```
+
+
+## Create Data frame functions
+
+### Example 1: count columns
+
+#### code snippets
+```{r}
+ncol_num <- flights %>%
+    
+    # Select a type of variables
+    select(where(is.numeric)) %>%
+    
+    # Count columns
+    ncol()
+
+ncol_num
+```
+
+#### Turn them into a function
+
+
+
+#### Adding arguments for details of operation
+
+
+### Example 2: count rows
+
+#### code snippets
+```{r}
+nrow_num <- flights %>%
+    
+    # filter rows that meet a condition
+    filter(carrier == "UA") %>%
+    
+    # Count rows
+    nrow()
+
+nrow_num
+```
+
+#### Turn them into a function
+
+
+### Example 3: count rows
+Create your own.
+
+#### code snippets
+Use the filter() function to select rows that meet a condition.
+Refer to Chapter 5.2 Filter rows with filter()
+
+#### Turn them into a function

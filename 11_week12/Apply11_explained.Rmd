@@ -1,0 +1,156 @@
+---
+title: "Week 12: Apply it to your data 11"
+subtitle: "Chapter 19 Functions"
+author: "Daniel Lee"
+date: "2022-10-05"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Load package
+library(tidyverse)
+library(nycflights13)
+```
+
+## Import your data
+
+```{r}
+data(flights)
+
+flights %>% skimr::skim()
+```
+
+
+## Create Data frame functions
+
+### Example 1: count columns
+
+#### code snippets
+```{r}
+ncol_num <- flights %>%
+    
+    # Select a type of variables
+    select(where(is.numeric)) %>%
+    
+    # Count columns
+    ncol()
+
+ncol_num
+```
+
+#### Turn them into a function
+```{r}
+# Create a function to count # of a type of columns
+count_numeric_var <- function(.data) {
+    
+    # body
+    ncol_num <- .data %>%
+    
+    # Select a type of variables
+    select(where(is.numeric)) %>%
+    
+    # Count columns
+    ncol()
+    
+    # return value
+    return(ncol_num)
+    
+}
+
+flights %>% count_numeric_var()
+flights %>% .[, -1:-13] %>% count_numeric_var()
+```
+
+
+#### Adding arguments for details of operation
+```{r}
+# Create a function to count # of a type of columns
+count_type_of_var <- function(.data, type = "numeric") {
+    
+    # if statement for type of variables
+    if(type == "numeric") {
+        
+        # body
+        ncol_num <- .data %>%
+        
+        # Select a type of variables
+        select(where(is.numeric)) %>%
+        
+        # Count columns
+        ncol()
+        
+    } else if(type == "character") {
+        
+        # body
+        ncol_num <- .data %>%
+        
+        # Select a type of variables
+        select(where(is.character)) %>%
+        
+        # Count columns
+        ncol()        
+        
+    }
+    
+
+    # return value
+    return(ncol_num)
+    
+}
+
+flights %>% count_type_of_var(type = "character")
+flights %>% .[, -1:-13] %>% count_type_of_var(type = "character")
+```
+
+### Example 2: count rows
+
+#### code snippets
+```{r}
+nrow_num <- flights %>%
+    
+    # filter rows that meet a condition
+    filter(carrier == "UA") %>%
+    
+    # Count rows
+    nrow()
+
+nrow_num
+```
+
+#### Turn them into a function
+```{r}
+# Create a function to count # of a type of columns
+count_n_flights_by_carrier <- function(.data, carrier_name) {
+    
+    # body
+    nrow_num <- .data %>%
+        
+        # filter rows that meet a condition
+        filter(carrier == carrier_name) %>%
+        
+        # Count rows
+        nrow()
+    
+    nrow_num
+    
+    # return value
+    return(nrow_num)
+    
+}
+
+flights %>% count_n_flights_by_carrier(carrier_name = "UA")
+flights %>% .[1:10, ] %>% count_n_flights_by_carrier(carrier_name = "UA")
+```
+
+### Example 3: count rows
+Create your own.
+
+#### code snippets
+Use the filter() function to select rows that meet a condition.
+Refer to Chapter 5.2 Filter rows with filter()
+
+#### Turn them into a function

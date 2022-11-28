@@ -3,20 +3,19 @@ function(asset_returns_wide_tbl, w) {
 
     # Covariance of asset returns
     covariance_matrix <- cov(asset_returns_wide_tbl)
-
+    
     # Standard deviation of portfolio
     sd_portfolio <- sqrt(t(w) %*% covariance_matrix %*% w)
 
-    # Marginal contribution
-    marginal_contribution <- w %*% covariance_matrix / sd_portfolio[1,1]
-
     # Component contribution
-    component_contribution <- marginal_contribution * w
+    component_contribution <- (t(w) %*% covariance_matrix * w) / sd_portfolio[1,1]
 
     # Component contribution in percentage
-    (component_contribution / sd_portfolio[1,1]) %>%
+    component_percentages <- (component_contribution / sd_portfolio[1,1]) %>%
         round(3) %>%
         as_tibble()
+    
+    return(component_percentages)
 
 }
 calculate_comp_contrib_by_window <-

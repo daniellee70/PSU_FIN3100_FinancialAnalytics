@@ -13,7 +13,7 @@
 
 <meta name="date" content="2022-09-19" />
 
-<title>Week 14: Code along 12</title>
+<title>Apply it to your data 12</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -356,210 +356,41 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">Week 14: Code along 12</h1>
-<h3 class="subtitle">CHAPTER 10 Component Contribution to Standard
-Deviation</h3>
+<h1 class="title toc-ignore">Apply it to your data 12</h1>
+<h3 class="subtitle">Which of the assets the largest contributor to the
+portfolio volatility?</h3>
 <h4 class="author">Daniel Lee</h4>
 <h4 class="date">2022-09-19</h4>
 
 </div>
 
-<div id="TOC">
-<ul>
-<li><a href="#goal" id="toc-goal">Goal</a></li>
-<li><a href="#import-stock-prices" id="toc-import-stock-prices">1 Import
-stock prices</a></li>
-<li><a href="#convert-prices-to-returns" id="toc-convert-prices-to-returns">2 Convert prices to returns</a></li>
-<li><a href="#component-contribution-step-by-step" id="toc-component-contribution-step-by-step">3 Component Contribution
-Step-by-Step</a></li>
-<li><a href="#component-contribution-with-a-custom-function" id="toc-component-contribution-with-a-custom-function">4 Component
-Contribution with a Custom Function</a></li>
-<li><a href="#visualizing-component-contribution" id="toc-visualizing-component-contribution">5 Visualizing Component
-Contribution</a></li>
-<li><a href="#rolling-component-contribution" id="toc-rolling-component-contribution">6 Rolling Component
-Contribution</a></li>
-</ul>
-</div>
 
 <pre class="r"><code># Load packages
 
 # Core
 library(tidyverse)
-library(tidyquant)
-library(readr)
-
-# Time series
-library(lubridate)
-library(tibbletime)
-
-# modeling
-library(broom)</code></pre>
+library(tidyquant)</code></pre>
 <div id="goal" class="section level2">
 <h2>Goal</h2>
 <p>Examine how each asset contributes to portfolio standard deviation.
 This is to ensure that our risk is not concentrated in any one
 asset.</p>
-<p>five stocks: “SPY”, “EFA”, “IJS”, “EEM”, “AGG” from 2012-12-31 to
-2017-12-31</p>
 </div>
 <div id="import-stock-prices" class="section level2">
 <h2>1 Import stock prices</h2>
-<pre class="r"><code>symbols &lt;- c(&quot;SPY&quot;, &quot;EFA&quot;, &quot;IJS&quot;, &quot;EEM&quot;, &quot;AGG&quot;)
-
-prices &lt;- tq_get(x    = symbols,
-                 get  = &quot;stock.prices&quot;,    
-                 from = &quot;2012-12-31&quot;,
-                 to   = &quot;2017-12-31&quot;)</code></pre>
+<p>Choose your stocks from 2012-12-31 to present.</p>
 </div>
-<div id="convert-prices-to-returns" class="section level2">
-<h2>2 Convert prices to returns</h2>
-<pre class="r"><code>asset_returns_tbl &lt;- prices %&gt;%
-    
-    group_by(symbol) %&gt;%
-    
-    tq_transmute(select     = adjusted, 
-                 mutate_fun = periodReturn, 
-                 period     = &quot;monthly&quot;,
-                 type       = &quot;log&quot;) %&gt;%
-    
-    slice(-1) %&gt;%
-    
-    ungroup() %&gt;%
-    
-    set_names(c(&quot;asset&quot;, &quot;date&quot;, &quot;returns&quot;))</code></pre>
+<div id="convert-prices-to-returns-monthly" class="section level2">
+<h2>2 Convert prices to returns (monthly)</h2>
 </div>
-<div id="component-contribution-step-by-step" class="section level2">
-<h2>3 Component Contribution Step-by-Step</h2>
-<p>Refresh your memory on covariance with this video. Click <a href="https://www.youtube.com/watch?v=qtaqvPAeEJY">this link</a> Refresh
-your memory on matrix multiplication. Click <a href="https://www.mathsisfun.com/algebra/matrix-multiplying.html">this
-link</a></p>
-<pre class="r"><code># Transform data into wide form
-asset_returns_wide_tbl &lt;- asset_returns_tbl %&gt;%
-
-    pivot_wider(names_from = asset, values_from = returns) %&gt;%
-
-    column_to_rownames(var = &quot;date&quot;)
-
-asset_returns_wide_tbl</code></pre>
-<pre><code>##                      AGG           EEM           EFA          IJS           SPY
-## 2013-01-31 -0.0062307790 -0.0029352019  0.0366063652  0.052133102  4.992295e-02
-## 2013-02-28  0.0058904920 -0.0231052718 -0.0129696171  0.016175407  1.267847e-02
-## 2013-03-28  0.0009852879 -0.0102349807  0.0129696171  0.040258115  3.726757e-02
-## 2013-04-30  0.0096395041  0.0120847915  0.0489678693  0.001222631  1.903051e-02
-## 2013-05-31 -0.0202140035 -0.0494835538 -0.0306558662  0.041976522  2.333528e-02
-## 2013-06-28 -0.0157783556 -0.0547286128 -0.0271443704 -0.001403170 -1.343489e-02
-## 2013-07-31  0.0026883427  0.0131597976  0.0518603537  0.063541614  5.038641e-02
-## 2013-08-30 -0.0082986703 -0.0257055805 -0.0197463914 -0.034743794 -3.045150e-02
-## 2013-09-30  0.0111437244  0.0695889085  0.0753386750  0.063873814  3.115602e-02
-## 2013-10-31  0.0082920449  0.0408613927  0.0320815816  0.034234141  4.526669e-02
-## 2013-11-29 -0.0025097159 -0.0025938405  0.0054497967  0.041661171  2.920683e-02
-## 2013-12-31 -0.0055831705 -0.0040745033  0.0215279437  0.012892200  2.559635e-02
-## 2014-01-31  0.0152920129 -0.0903227151 -0.0534133225 -0.035775711 -3.588448e-02
-## 2014-02-28  0.0037564136  0.0332202984  0.0595050413  0.045257602  4.451038e-02
-## 2014-03-31 -0.0014812381  0.0380221892 -0.0046025583  0.013315405  8.260983e-03
-## 2014-04-30  0.0081830441  0.0077724183  0.0165292306 -0.023184185  6.927694e-03
-## 2014-05-30  0.0117212935  0.0290913419  0.0158286827  0.006205160  2.294090e-02
-## 2014-06-30 -0.0005751854  0.0237339091  0.0091655169  0.037718614  2.043497e-02
-## 2014-07-31 -0.0025129187  0.0135556517 -0.0263801055 -0.052009420 -1.352876e-02
-## 2014-08-29  0.0114314262  0.0279045096  0.0018005837  0.043657877  3.870467e-02
-## 2014-09-30 -0.0061670237 -0.0808566904 -0.0395984011 -0.061260551 -1.389230e-02
-## 2014-10-31  0.0105838404  0.0140964225 -0.0026548064  0.068875101  2.327763e-02
-## 2014-11-28  0.0065490795 -0.0155410573  0.0006251483  0.004773575  2.710179e-02
-## 2014-12-31  0.0014748580 -0.0404422589 -0.0407466879  0.025295536 -2.539990e-03
-## 2015-01-30  0.0203152030 -0.0068958195  0.0062264467 -0.054627570 -3.007729e-02
-## 2015-02-27 -0.0089878610  0.0431361518  0.0614507247  0.056914362  5.468219e-02
-## 2015-03-31  0.0037399707 -0.0150861321 -0.0143887673  0.010156538 -1.583036e-02
-## 2015-04-30 -0.0032327230  0.0662811676  0.0358163834 -0.018417870  9.785805e-03
-## 2015-05-29 -0.0043838278 -0.0419109449  0.0019527127  0.007510148  1.277440e-02
-## 2015-06-30 -0.0108251743 -0.0297466973 -0.0316788483  0.004171265 -2.052132e-02
-## 2015-07-31  0.0085843851 -0.0651780932  0.0201146172 -0.027375327  2.233769e-02
-## 2015-08-31 -0.0033637537 -0.0925125135 -0.0771525724 -0.047268523 -6.288659e-02
-## 2015-09-30  0.0080812627 -0.0318248460 -0.0451947595 -0.038464526 -2.584709e-02
-## 2015-10-30  0.0006857814  0.0618082470  0.0640258457  0.063589660  8.163486e-02
-## 2015-11-30 -0.0038986572 -0.0255604213 -0.0075557013  0.024415187  3.648635e-03
-## 2015-12-31 -0.0019184840 -0.0389471049 -0.0235951797 -0.052157049 -1.743380e-02
-## 2016-01-29  0.0123296183 -0.0516364972 -0.0567579170 -0.060306851 -5.106853e-02
-## 2016-02-29  0.0088318105 -0.0082116547 -0.0339137671  0.020605179 -8.263966e-04
-## 2016-03-31  0.0087088225  0.1218790034  0.0637456380  0.089910498  6.510051e-02
-## 2016-04-29  0.0025462492  0.0040792675  0.0219751258  0.021044098  3.933295e-03
-## 2016-05-31  0.0001351271 -0.0376286169 -0.0008561489  0.004397174  1.686853e-02
-## 2016-06-30  0.0191671433  0.0445824481 -0.0244916208  0.008292294  3.469841e-03
-## 2016-07-29  0.0054294322  0.0524419585  0.0390004854  0.049348301  3.582186e-02
-## 2016-08-31 -0.0021561355  0.0087987151  0.0053267237  0.011261213  1.197001e-03
-## 2016-09-30  0.0005160733  0.0248730342  0.0132791638  0.008614468  5.772894e-05
-## 2016-10-31 -0.0082055344 -0.0083123874 -0.0224037681 -0.038134636 -1.748910e-02
-## 2016-11-30 -0.0259893371 -0.0451619009 -0.0179742723  0.125246274  3.617623e-02
-## 2016-12-30  0.0025378017 -0.0025299428  0.0267027844  0.031491958  2.006898e-02
-## 2017-01-31  0.0021264314  0.0644318825  0.0323819798 -0.012143747  1.773644e-02
-## 2017-02-28  0.0064373869  0.0172575727  0.0118364441  0.013428453  3.853931e-02
-## 2017-03-31 -0.0005526504  0.0361889260  0.0318055449 -0.006533048  1.249245e-03
-## 2017-04-28  0.0090293429  0.0168662675  0.0239522302  0.005107704  9.877226e-03
-## 2017-05-31  0.0068473754  0.0280599708  0.0348102159 -0.022862656  1.401427e-02
-## 2017-06-30 -0.0001823878  0.0092237842  0.0029559199  0.029151924  6.354715e-03
-## 2017-07-31  0.0033337779  0.0565944551  0.0261879949  0.007481585  2.034571e-02
-## 2017-08-31  0.0093693943  0.0232439220 -0.0004483679 -0.027564734  2.913464e-03
-## 2017-09-29 -0.0057321515 -0.0004461971  0.0233428581  0.082321543  1.994915e-02
-## 2017-10-31  0.0009779577  0.0322784411  0.0166535734  0.005915981  2.329053e-02
-## 2017-11-30 -0.0014839332 -0.0038970086  0.0068699603  0.036913409  3.010832e-02
-## 2017-12-29  0.0047403448  0.0369253525  0.0133983353 -0.003731345  1.205502e-02</code></pre>
-<pre class="r"><code># Covariance of asset returns
-covariance_matrix &lt;- cov(asset_returns_wide_tbl)
-
-covariance_matrix</code></pre>
-<pre><code>##               AGG          EEM          EFA           IJS           SPY
-## AGG  7.398339e-05 0.0001042110 4.178365e-05 -7.811739e-05 -9.029597e-06
-## EEM  1.042110e-04 0.0017547123 1.039018e-03  6.437747e-04  6.795438e-04
-## EFA  4.178365e-05 0.0010390176 1.064239e-03  6.490326e-04  6.975429e-04
-## IJS -7.811739e-05 0.0006437747 6.490326e-04  1.565450e-03  8.290269e-04
-## SPY -9.029597e-06 0.0006795438 6.975429e-04  8.290269e-04  7.408312e-04</code></pre>
-<pre class="r"><code># Standard deviation of portfolio
-# Summarizes how much each asset&#39;s returns vary with those of other assets within the portfolio into a single number
-w &lt;- c(0.25, 0.25, 0.2, 0.2, 0.1)
-
-sd_portfolio &lt;- sqrt(t(w) %*% covariance_matrix %*% w)
-sd_portfolio</code></pre>
-<pre><code>##            [,1]
-## [1,] 0.02347494</code></pre>
-<pre class="r"><code># Component contribution
-# Similar to the formula for sd_portfolio
-# Mathematical trick to summarize the same, sd_portfolio, by asset instead of a single number
-component_contribution &lt;- (t(w) %*% covariance_matrix * w) / sd_portfolio[1,1]
-component_contribution</code></pre>
-<pre><code>##               AGG         EEM        EFA         IJS         SPY
-## [1,] 0.0003874228 0.009257145 0.00581564 0.005684476 0.002330254</code></pre>
-<pre class="r"><code>rowSums(component_contribution)</code></pre>
-<pre><code>## [1] 0.02347494</code></pre>
-<pre class="r"><code># Component contribution in percentage
-component_percentages &lt;- (component_contribution / sd_portfolio[1,1]) %&gt;%
-    round(3) %&gt;%
-    as_tibble()
-
-component_percentages</code></pre>
-<pre><code>## # A tibble: 1 x 5
-##     AGG   EEM   EFA   IJS   SPY
-##   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-## 1 0.017 0.394 0.248 0.242 0.099</code></pre>
-<pre class="r"><code>component_percentages %&gt;%
-
-    as_tibble() %&gt;%
-    gather(key = &quot;asset&quot;, value = &quot;contribution&quot;)</code></pre>
-<pre><code>## # A tibble: 5 x 2
-##   asset contribution
-##   &lt;chr&gt;        &lt;dbl&gt;
-## 1 AGG          0.017
-## 2 EEM          0.394
-## 3 EFA          0.248
-## 4 IJS          0.242
-## 5 SPY          0.099</code></pre>
+<div id="calculate-component-contribution-to-portfolio-volatility" class="section level2">
+<h2>3 Calculate Component Contribution to Portfolio Volatility</h2>
 </div>
-<div id="component-contribution-with-a-custom-function" class="section level2">
-<h2>4 Component Contribution with a Custom Function</h2>
-</div>
-<div id="visualizing-component-contribution" class="section level2">
-<h2>5 Visualizing Component Contribution</h2>
-</div>
-<div id="rolling-component-contribution" class="section level2">
-<h2>6 Rolling Component Contribution</h2>
+<div id="plot-colum-chart-of-component-contribution-and-weight" class="section level2">
+<h2>6 Plot: Colum Chart of Component Contribution and Weight</h2>
+<p>Which of the assets in your portfolio the largest contributor to the
+portfolio volatility? Do you think your portfolio risk is concentrated
+in any one asset?</p>
 </div>
 
 

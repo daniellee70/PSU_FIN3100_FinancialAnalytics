@@ -1,0 +1,42 @@
+---
+title: "Apply it to your data 12"
+subtitle: "Which of the assets the largest contributor to the portfolio volatility? "
+author: "Daniel Lee"
+date: "2022-09-19"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+```{r}
+# Load packages
+
+# Core
+library(tidyverse)
+library(tidyquant)
+
+```
+
+## Goal
+Examine how each asset contributes to portfolio standard deviation. This is to ensure that our risk is not concentrated in any one asset.
+
+
+## 1 Import stock prices
+Choose your stocks from 2012-12-31 to present.
+
+## 2 Convert prices to returns (monthly)
+
+
+## 3 Calculate Component Contribution to Portfolio Volatility
+
+
+
+## 6 Plot: Colum Chart of Component Contribution and Weight
+
+Which of the assets in your portfolio the largest contributor to the portfolio volatility? Do you think your portfolio risk is concentrated in any one asset?
+
+

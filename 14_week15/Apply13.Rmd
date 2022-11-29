@@ -1,0 +1,113 @@
+---
+title: "Apply it to your data 13"
+subtitle: "How much should you expect from your $100 investment after 20 years?"
+author: "Daniel Lee"
+date: "2022-09-19"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+```{r}
+# Load packages
+
+# Core
+library(tidyverse)
+library(tidyquant)
+
+# Source function
+source("../00_scripts/simulate_accumulation.R")
+```
+
+
+## 1 Import stock prices
+
+***Revise the code below.***
+
+* Replace symbols with your stocks.
+* Replace the from and the to arguments to date from 2012-12-31 to present.
+
+```{r}
+symbols <- c("SPY", "EFA", "IJS", "EEM", "AGG")
+
+prices <- tq_get(x    = symbols,
+                 get  = "stock.prices",    
+                 from = "2012-12-31",
+                 to   = "2017-12-31")
+```
+
+## 2 Convert prices to returns
+
+```{r}
+asset_returns_tbl <- prices %>%
+    
+    group_by(symbol) %>%
+    
+    tq_transmute(select     = adjusted, 
+                 mutate_fun = periodReturn, 
+                 period     = "monthly",
+                 type       = "log") %>%
+    
+    slice(-1) %>%
+    
+    ungroup() %>%
+    
+    set_names(c("asset", "date", "returns"))
+```
+
+## 3 Assign a weight to each asset
+
+***Revise the code for weights.*** 
+
+* The vector weights should have a length equal to the number of assets in the portfolio.
+* The values in the vector weights should sum to 1.
+
+```{r}
+# symbols
+symbols <- asset_returns_tbl %>% distinct(asset) %>% pull()
+symbols
+
+# weights
+weights <- c(0.25, 0.25, 0.2, 0.2, 0.1)
+weights
+
+w_tbl <- tibble(symbols, weights)
+w_tbl
+```
+
+## 4 Build a portfolio
+
+
+```{r}
+portfolio_returns_tbl <- asset_returns_tbl %>%
+    
+    tq_portfolio(assets_col = asset, 
+                 returns_col = returns, 
+                 weights = w_tbl, 
+                 rebalance_on = "months", 
+                 col_rename = "returns")
+
+portfolio_returns_tbl
+```
+
+## 5 Simulating growth of a dollar
+
+***No need***
+
+
+## 6 Simulation function
+
+***No need***
+
+
+## 7 Running multiple simulations 
+
+## 8 Visualizing simulations with ggplot
+Line Plot of Simulations with Max, Median, and Min
+
+Based on the Monte Carlo simulation results, how much should you expect from your $100 investment after 20 years? What is the best-case scenario? What is the worst-case scenario? What are limitations of this simulation analysis? 
+

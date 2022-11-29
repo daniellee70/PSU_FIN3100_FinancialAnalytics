@@ -1,0 +1,237 @@
+---
+title: "Week 15: Code along 13"
+subtitle: "CHAPTER 11 Monte Carlo Simulation"
+author: "Daniel Lee"
+date: "2022-09-19"
+output: 
+  html_document: 
+    toc: yes
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+```{r}
+# Load packages
+
+# Core
+library(tidyverse)
+library(tidyquant)
+
+# time series
+library(timetk)
+```
+
+## Goal
+Simulate future portfolio returns
+
+five stocks: "SPY", "EFA", "IJS", "EEM", "AGG"
+
+market: "SPY"
+
+from 2012-12-31 to 2017-12-31
+
+## 1 Import stock prices
+
+```{r}
+symbols <- c("SPY", "EFA", "IJS", "EEM", "AGG")
+
+prices <- tq_get(x    = symbols,
+                 get  = "stock.prices",    
+                 from = "2012-12-31",
+                 to   = "2017-12-31")
+```
+
+## 2 Convert prices to returns
+
+```{r}
+asset_returns_tbl <- prices %>%
+    
+    group_by(symbol) %>%
+    
+    tq_transmute(select     = adjusted, 
+                 mutate_fun = periodReturn, 
+                 period     = "monthly",
+                 type       = "log") %>%
+    
+    slice(-1) %>%
+    
+    ungroup() %>%
+    
+    set_names(c("asset", "date", "returns"))
+```
+
+## 3 Assign a weight to each asset
+
+```{r}
+# symbols
+symbols <- asset_returns_tbl %>% distinct(asset) %>% pull()
+symbols
+
+# weights
+weights <- c(0.25, 0.25, 0.2, 0.2, 0.1)
+weights
+
+w_tbl <- tibble(symbols, weights)
+w_tbl
+```
+
+## 4 Build a portfolio
+
+
+```{r}
+# ?tq_portfolio
+
+portfolio_returns_tbl <- asset_returns_tbl %>%
+    
+    tq_portfolio(assets_col = asset, 
+                 returns_col = returns, 
+                 weights = w_tbl, 
+                 rebalance_on = "months", 
+                 col_rename = "returns")
+
+portfolio_returns_tbl
+```
+
+
+
+## 5 Simulating growth of a dollar
+
+```{r}
+# Get mean portfolio return
+mean_port_return <- mean(portfolio_returns_tbl$returns)
+mean_port_return
+
+# Get standard deviation of portfolio returns
+stddev_port_return <- sd(portfolio_returns_tbl$returns)
+stddev_port_return
+
+# Construct a normal distribution
+simulated_monthly_returns <- rnorm(120, mean_port_return, stddev_port_return)
+simulated_monthly_returns
+
+# Add a dollar
+simulated_returns_add_1 <- tibble(returns = c(1, 1 + simulated_monthly_returns))
+simulated_returns_add_1
+
+# Calculate the cumulative growth of a dollar
+simulated_growth <- simulated_returns_add_1 %>%
+    mutate(growth = accumulate(returns, function(x, y) x*y)) %>%
+    select(growth)
+
+simulated_growth
+
+# Check the compound annual growth rate
+cagr <- ((simulated_growth$growth[nrow(simulated_growth)]^(1/10)) - 1) * 100
+cagr
+```
+
+## 6 Simulation function
+
+```{r}
+simulate_accumulation <- function(init_value, N, mean, stdev) {
+
+    tibble(returns = c(init_value, 1 + rnorm(N, mean, stdev))) %>%
+        mutate(growth = accumulate(returns, function(x, y) x*y)) %>%
+        select(growth)
+
+}
+
+simulate_accumulation(1, 120, mean_port_return, stddev_port_return)
+
+# Save the function
+dump(list = c("simulate_accumulation"), file = "../00_scripts/simulate_accumulation.R")
+```
+
+## 7 Running multiple simulations 
+
+```{r}
+# Create a vector of 1s as a starting point
+sims <- 51
+starts <- rep(1, sims) %>%
+    set_names(paste("sim", 1:sims, sep = ""))
+
+starts
+
+# Simulate
+monte_carlo_sim_51 <- starts %>%
+
+    # Simulate
+    map_dfc(simulate_accumulation,
+            N     = 120,
+            mean  = mean_port_return,
+            stdev = stddev_port_return) %>%
+
+    # Add the column, month
+    mutate(month = seq(1:nrow(.))) %>%
+
+    # Arrange column names
+    select(month, everything()) %>%
+    set_names(c("month", names(starts))) %>%
+
+    pivot_longer(cols = -month, names_to = "sim", values_to = "growth")
+
+monte_carlo_sim_51
+```
+
+
+```{r}
+# Calculate the quantiles for simulated values
+
+probs <- c(.005, .025, .25, .5, .75, .975, .995)
+
+monte_carlo_sim_51 %>%
+
+    group_by(sim) %>%
+    summarise(growth = last(growth)) %>%
+    ungroup() %>%
+    pull(growth) %>%
+
+    # Find the quantiles
+    quantile(probs = probs) %>%
+    round(2)
+```
+
+## 8 Visualizing simulations with ggplot
+
+```{r}
+monte_carlo_sim_51 %>%
+
+    ggplot(aes(x = month, y = growth, col = sim)) +
+    geom_line() +
+    theme(legend.position = "none")
+
+# Simplify the plot
+
+sim_summary <- monte_carlo_sim_51 %>%
+
+    group_by(sim) %>%
+    summarise(growth = last(growth)) %>%
+    ungroup() %>%
+
+    summarise(max = max(growth),
+              median = median(growth),
+              min = min(growth))
+
+sim_summary
+
+monte_carlo_sim_51 %>%
+
+    group_by(sim) %>%
+    filter(last(growth) == sim_summary$max |
+           last(growth) == sim_summary$median |
+           last(growth) == sim_summary$min) %>%
+
+    # Plot
+    ggplot(aes(month, growth, col = sim)) +
+    geom_line() +
+    theme()
+
+
+
+
+```
+

@@ -131,9 +131,107 @@ cagr
 
 ## 6 Simulation function
 
+```{r}
+simulate_accumulation <- function(init_value, N, mean, stdev) {
+
+    tibble(returns = c(init_value, 1 + rnorm(N, mean, stdev))) %>%
+        mutate(growth = accumulate(returns, function(x, y) x*y)) %>%
+        select(growth)
+
+}
+
+simulate_accumulation(1, 120, mean_port_return, stddev_port_return)
+
+# Save the function
+dump(list = c("simulate_accumulation"), file = "../00_scripts/simulate_accumulation.R")
+```
 
 ## 7 Running multiple simulations 
 
+```{r}
+# Create a vector of 1s as a starting point
+sims <- 51
+starts <- rep(1, sims) %>%
+    set_names(paste("sim", 1:sims, sep = ""))
+
+starts
+
+# Simulate
+monte_carlo_sim_51 <- starts %>%
+
+    # Simulate
+    map_dfc(simulate_accumulation,
+            N     = 120,
+            mean  = mean_port_return,
+            stdev = stddev_port_return) %>%
+
+    # Add the column, month
+    mutate(month = seq(1:nrow(.))) %>%
+
+    # Arrange column names
+    select(month, everything()) %>%
+    set_names(c("month", names(starts))) %>%
+
+    pivot_longer(cols = -month, names_to = "sim", values_to = "growth")
+
+monte_carlo_sim_51
+```
+
+
+```{r}
+# Calculate the quantiles for simulated values
+
+probs <- c(.005, .025, .25, .5, .75, .975, .995)
+
+monte_carlo_sim_51 %>%
+
+    group_by(sim) %>%
+    summarise(growth = last(growth)) %>%
+    ungroup() %>%
+    pull(growth) %>%
+
+    # Find the quantiles
+    quantile(probs = probs) %>%
+    round(2)
+```
 
 ## 8 Visualizing simulations with ggplot
+
+```{r}
+monte_carlo_sim_51 %>%
+
+    ggplot(aes(x = month, y = growth, col = sim)) +
+    geom_line() +
+    theme(legend.position = "none")
+
+# Simplify the plot
+
+sim_summary <- monte_carlo_sim_51 %>%
+
+    group_by(sim) %>%
+    summarise(growth = last(growth)) %>%
+    ungroup() %>%
+
+    summarise(max = max(growth),
+              median = median(growth),
+              min = min(growth))
+
+sim_summary
+
+monte_carlo_sim_51 %>%
+
+    group_by(sim) %>%
+    filter(last(growth) == sim_summary$max |
+           last(growth) == sim_summary$median |
+           last(growth) == sim_summary$min) %>%
+
+    # Plot
+    ggplot(aes(month, growth, col = sim)) +
+    geom_line() +
+    theme()
+
+
+
+
+```
 

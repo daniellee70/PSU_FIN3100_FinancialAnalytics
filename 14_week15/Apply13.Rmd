@@ -96,7 +96,16 @@ portfolio_returns_tbl
 
 ## 5 Simulating growth of a dollar
 
-***No need***
+```{r}
+# Get mean portfolio return
+mean_port_return <- mean(portfolio_returns_tbl$returns)
+mean_port_return
+
+# Get standard deviation of portfolio returns
+stddev_port_return <- sd(portfolio_returns_tbl$returns)
+stddev_port_return
+```
+
 
 
 ## 6 Simulation function

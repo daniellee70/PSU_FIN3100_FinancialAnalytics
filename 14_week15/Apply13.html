@@ -460,7 +460,14 @@ portfolio_returns_tbl</code></pre>
 </div>
 <div id="simulating-growth-of-a-dollar" class="section level2">
 <h2>5 Simulating growth of a dollar</h2>
-<p><strong><em>No need</em></strong></p>
+<pre class="r"><code># Get mean portfolio return
+mean_port_return &lt;- mean(portfolio_returns_tbl$returns)
+mean_port_return</code></pre>
+<pre><code>## [1] 0.005899134</code></pre>
+<pre class="r"><code># Get standard deviation of portfolio returns
+stddev_port_return &lt;- sd(portfolio_returns_tbl$returns)
+stddev_port_return</code></pre>
+<pre><code>## [1] 0.0234749</code></pre>
 </div>
 <div id="simulation-function" class="section level2">
 <h2>6 Simulation function</h2>
